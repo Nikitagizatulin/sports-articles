@@ -1,0 +1,40 @@
+# Dependencies
+node_modules
+**/node_modules
+
+# Build outputs
+dist
+build
+.next
+out
+
+# Generated files
+*.tsbuildinfo
+next-env.d.ts
+*.log
+
+# Package manager files
+package-lock.json
+pnpm-lock.yaml
+yarn.lock
+
+# Database
+*.db
+*.sqlite
+
+# Environment files
+.env
+.env.local
+.env.*.local
+
+# IDE
+.idea
+.vscode
+
+# OS
+.DS_Store
+Thumbs.db
+
+# Prisma generated
+**/generated/prisma
+
