@@ -41,7 +41,50 @@ This will start a PostgreSQL database on port 5432 with the following credential
 - User: `root`
 - Password: `password`
 
-### 3. Set Up Backend
+### 3. Configure Environment Variables
+
+**Important:** You must configure environment variables before running migrations and seeding the database.
+
+#### Backend Environment Variables
+
+Create a `.env` file in `apps/backend/` by copying the example file:
+
+```bash
+cd apps/backend
+cp .env.example .env
+```
+
+The `.env.example` file contains:
+
+```env
+# Postgres
+DATABASE_URL="postgresql://root:password@localhost:5432/sports_articles?schema=public"
+
+# Server
+PORT=4000
+NODE_ENV=development
+```
+
+Update the `DATABASE_URL` if your database credentials differ from the defaults.
+
+#### Frontend Environment Variables
+
+Create a `.env.local` file in `apps/frontend/` by copying the example file:
+
+```bash
+cd apps/frontend
+cp .env.example .env.local
+```
+
+The `.env.example` file contains:
+
+```env
+NEXT_PUBLIC_GRAPHQL_URL=http://localhost:4000/graphql
+```
+
+Update the URL if your backend is running on a different port or host.
+
+### 4. Set Up Backend
 
 ```bash
 cd apps/backend
@@ -49,14 +92,14 @@ cd apps/backend
 # Generate Prisma Client
 pnpm prisma:generate
 
-# Run database migrations
+# Run database migrations (requires DATABASE_URL in .env)
 pnpm prisma:migrate
 
 # Seed the database (optional - creates 15 sample articles)
 pnpm prisma:seed
 ```
 
-### 4. Start Development Servers
+### 5. Start Development Servers
 
 From the root directory:
 
@@ -194,12 +237,35 @@ cd apps/frontend && pnpm format:check
 
 ### Environment Variables
 
-Create a `.env` file in `apps/backend/`:
+Environment variables are required for both backend and frontend applications. Example files (`.env.example`) are provided in each app directory.
 
-```env
-DATABASE_URL="postgresql://root:password@localhost:5432/sports_articles"
-PORT=4000
+#### Backend (`apps/backend/.env`)
+
+Required variables:
+- `DATABASE_URL` - PostgreSQL connection string
+- `PORT` - Server port (default: 4000)
+- `NODE_ENV` - Environment mode (default: development)
+
+Copy `.env.example` to `.env` and update the values as needed:
+
+```bash
+cd apps/backend
+cp .env.example .env
 ```
+
+#### Frontend (`apps/frontend/.env.local`)
+
+Required variables:
+- `NEXT_PUBLIC_GRAPHQL_URL` - GraphQL API endpoint URL
+
+Copy `.env.example` to `.env.local` and update the URL if needed:
+
+```bash
+cd apps/frontend
+cp .env.example .env.local
+```
+
+**Note:** In Next.js, environment variables prefixed with `NEXT_PUBLIC_` are exposed to the browser. Other variables are only available on the server side.
 
 ### Prisma Configuration
 
@@ -225,8 +291,15 @@ After making changes to the schema:
 ### Database Connection Issues
 
 - Ensure Docker is running and the database container is up: `docker-compose ps`
-- Check database credentials in `.env` file
+- Verify that `apps/backend/.env` file exists and contains the correct `DATABASE_URL`
+- Check that the database credentials match your docker-compose.yml configuration
 - Verify PostgreSQL is accessible on port 5432
+
+### Environment Variable Issues
+
+- **Backend**: Ensure `apps/backend/.env` exists and contains `DATABASE_URL` before running migrations
+- **Frontend**: Ensure `apps/frontend/.env.local` exists and contains `NEXT_PUBLIC_GRAPHQL_URL`
+- If the frontend cannot connect to the backend, verify the GraphQL URL in `.env.local` matches your backend server URL
 
 ### Port Conflicts
 
