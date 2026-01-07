@@ -57,34 +57,39 @@ export default function Home() {
       okType: "danger",
       cancelText: "Cancel",
       onOk: async () => {
-        const result = await deleteArticle({
-          variables: { id },
-          update(cache, result) {
-            if (!result.data?.deleteArticle) return;
+        try {
+          const result = await deleteArticle({
+            variables: { id },
+            update(cache, result) {
+              if (!result.data?.deleteArticle) return;
 
-            cache.evict({ id: cache.identify({ __typename: "SportsArticle", id }) });
-            cache.modify({
-              fields: {
-                articles(existing: any) {
-                  if (!existing?.items) return existing;
+              cache.evict({ id: cache.identify({ __typename: "SportsArticle", id }) });
+              cache.modify({
+                fields: {
+                  articles(existing: any) {
+                    if (!existing?.items) return existing;
 
-                  return {
-                    ...existing,
-                    items: existing.items.filter((ref: any) => {
-                      const refId = cache.identify(ref);
-                      const targetId = cache.identify({ __typename: "SportsArticle", id });
-                      return refId !== targetId;
-                    }),
-                  };
+                    return {
+                      ...existing,
+                      items: existing.items.filter((ref: any) => {
+                        const refId = cache.identify(ref);
+                        const targetId = cache.identify({ __typename: "SportsArticle", id });
+                        return refId !== targetId;
+                      }),
+                    };
+                  },
                 },
-              },
-            });
-            cache.gc();
-          },
-        });
+              });
+              cache.gc();
+            },
+          });
 
-        if (result.data?.deleteArticle) {
-          message.success("Article deleted successfully");
+          if (result.data?.deleteArticle) {
+            message.success("Article deleted successfully");
+          }
+        } catch (error) {
+          message.error("Failed to delete article. Please try again.");
+          console.error("Delete error:", error);
         }
       },
     });

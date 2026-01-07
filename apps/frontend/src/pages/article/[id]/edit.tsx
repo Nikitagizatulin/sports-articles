@@ -107,10 +107,15 @@ export default function EditArticlePage() {
             okType: "danger",
             cancelText: "Cancel",
             onOk: async () => {
-                const res = await deleteArticle({ variables: { id } });
-                if (res.data?.deleteArticle) {
-                    message.success("Article deleted successfully");
-                    await router.push(`/`);
+                try {
+                    const res = await deleteArticle({ variables: { id } });
+                    if (res.data?.deleteArticle) {
+                        message.success("Article deleted successfully");
+                        await router.push(`/`);
+                    }
+                } catch (error) {
+                    message.error("Failed to delete article. Please try again.");
+                    console.error("Delete error:", error);
                 }
             },
         });
